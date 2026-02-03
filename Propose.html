@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Propose Day ❤️</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #ff4757;
+      --secondary: #ff6b81;
+      --white: #ffffff;
+      --glass: rgba(255, 255, 255, 0.88);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at center, #fff0f3, #ffe2e6);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #2f3542;
+    }
+
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--white);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease;
+    }
+
+    .loader-heart { font-size: 60px; animation: beat 1s infinite; }
+
+    .progress-bar {
+      width: 220px; height: 6px; background: #eee;
+      border-radius: 10px; margin-top: 20px; overflow: hidden;
+    }
+    .progress {
+      width: 0%; height: 100%; background: var(--primary);
+      transition: width 2.5s ease-in-out;
+    }
+
+    #ask-screen {
+      height: 100vh;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3.6rem;
+      color: var(--primary);
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #57606f;
+      margin-bottom: 35px;
+      max-width: 550px;
+      line-height: 1.6;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 16px 42px;
+      border-radius: 50px;
+      border: none;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    }
+
+    #yesBtn { background: var(--primary); color: white; }
+    #noBtn { background: white; color: #747d8c; position: relative; }
+
+    #dashboard {
+      display: none;
+      padding: 40px 20px;
+      max-width: 650px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1s ease;
+    }
+
+    .card {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 8px 32px rgba(255, 71, 87, 0.1);
+      border: 1px solid rgba(255,255,255,0.65);
+    }
+
+    h2 {
+      color: var(--secondary);
+      margin-bottom: 12px;
+      font-size: 1.55rem;
+    }
+
+    .slider {
+      display: flex;
+      overflow-x: auto;
+      gap: 15px;
+      padding-bottom: 10px;
+      scroll-snap-type: x mandatory;
+    }
+
+    .slider img {
+      width: 250px; height: 350px;
+      object-fit: cover;
+      border-radius: 15px;
+      scroll-snap-align: center;
+      flex-shrink: 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+    }
+
+    video { width: 100%; border-radius: 15px; }
+
+    .envelope-wrapper {
+      height: 210px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 25px;
+      cursor: pointer;
+    }
+
+    .envelope {
+      width: 310px; height: 200px;
+      background: #ff7675;
+      position: relative;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.22);
+      transition: transform 0.3s;
+    }
+
+    .envelope::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 0; height: 0;
+      border-left: 155px solid transparent;
+      border-right: 155px solid transparent;
+      border-top: 100px solid #ff5252;
+      transform-origin: top;
+      transition: transform 0.5s 0.2s;
+      z-index: 5;
+    }
+
+    .letter {
+      position: absolute;
+      bottom: 0;
+      width: 270px;
+      height: 185px;
+      background: white;
+      padding: 20px;
+      transition: transform 0.5s;
+      z-index: 3;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.25rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #333;
+      box-shadow: 0 -5px 10px rgba(0,0,0,0.12);
+      border-radius: 10px;
+    }
+
+    .envelope-wrapper.open .envelope::before { transform: rotateX(180deg); z-index: 1; }
+    .envelope-wrapper.open .letter { transform: translateY(-125px); z-index: 4; height: auto; min-height: 260px; }
+    .envelope-wrapper:hover .envelope { transform: scale(1.02); }
+
+    .click-hint {
+      position: absolute;
+      bottom: 10px;
+      color: white;
+      font-size: 0.85rem;
+      z-index: 6;
+      opacity: 0.9;
+    }
+
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-heart">💞</div>
+    <div class="progress-bar"><div class="progress" id="bar"></div></div>
+    <p style="margin-top: 10px; color: #999;">Preparing something special...</p>
+  </div>
+
+  <!-- Ask Screen -->
+  <div id="ask-screen">
+    <h1>Happy Propose Day 💍</h1>
+    <p class="subtitle">
+      I don’t want perfect… I just want <b>YOU</b>.  
+      Will you be mine forever? 🌹❤️
+    </p>
+
+    <div class="buttons">
+      <button id="yesBtn" onclick="sayYes()">YES 💖</button>
+      <button id="noBtn" onmouseover="moveNo()" onclick="moveNo()">NO 🙈</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <div class="card" style="text-align: center;">
+      <h1 style="margin-bottom: 10px;">She/He said YES! 😍💍</h1>
+      <p style="font-size: 1.05rem;">
+        Today is not just Propose Day…  
+        it’s the beginning of <b>our forever</b> ❤️✨
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Our Memories 📸</h2>
+      <p style="font-size: 0.95rem; margin-bottom: 10px; color: #777;">
+        (Swipe to see more)
+      </p>
+
+      <div class="slider">
+        <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=800&q=80" alt="Memory 1">
+        <img src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80" alt="Memory 2">
+        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80" alt="Memory 3">
+        <img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=800&q=80" alt="Memory 4">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>For You 🎥</h2>
+      <p style="font-size: 0.95rem; color: #777; margin-bottom: 10px;">
+        A small video… but my feelings are endless 💞
+      </p>
+
+      <video controls>
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <div class="card" style="padding-bottom: 100px;">
+      <h2>My Proposal Letter 💌</h2>
+      <p style="font-size: 0.95rem; color: #777;">
+        Click the envelope to open your surprise ✨
+      </p>
+
+      <div class="envelope-wrapper" onclick="toggleLetter()">
+        <div class="envelope">
+          <span class="click-hint">Click to Open 💌</span>
+          <div class="letter">
+            <p>
+              <strong>My Love,</strong><br><br>
+              From the moment you came into my life,<br>
+              everything became more beautiful.<br><br>
+              On this Propose Day,<br>
+              I want to ask you one thing…<br><br>
+              <strong>Will you be mine forever? 💍❤️</strong><br><br>
+              Yours, always & forever 💞
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bg-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    window.onload = () => {
+      document.getElementById('bar').style.width = '100%';
+      setTimeout(() => {
+        document.getElementById('loader').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loader').style.display = 'none';
+          document.getElementById('ask-screen').style.display = 'flex';
+        }, 800);
+      }, 2500);
+    }
+
+    let noCount = 0;
+    const noTexts = [
+      "Are you sure? 😢",
+      "Think again 🥺",
+      "Please say YES 💞",
+      "Don’t break my heart 💔",
+      "Last chance 😭",
+      "Okay okay… I know you will say YES 😌"
+    ];
+
+    function moveNo() {
+      const btn = document.getElementById('noBtn');
+      const x = Math.random() * (window.innerWidth - btn.offsetWidth);
+      const y = Math.random() * (window.innerHeight - btn.offsetHeight);
+      btn.style.position = 'fixed';
+      btn.style.left = `${x}px`;
+      btn.style.top = `${y}px`;
+
+      if (noCount < noTexts.length) btn.innerText = noTexts[noCount];
+      else {
+        btn.innerText = "I give up 🙈";
+        btn.style.opacity = '0';
+        btn.style.pointerEvents = 'none';
+      }
+
+      const yesBtn = document.getElementById('yesBtn');
+      const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+      yesBtn.style.fontSize = `${currentSize * 1.15}px`;
+
+      noCount++;
+    }
+
+    function sayYes() {
+      document.getElementById('bg-music').play().catch(() => {});
+      const duration = 3500;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 6,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#ff4757', '#ff6b81']
+        });
+        confetti({
+          particleCount: 6,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#ff4757', '#ff6b81']
+        });
+
+        if (Date.now() < end) requestAnimationFrame(frame);
+      }());
+
+      document.getElementById('ask-screen').style.display = 'none';
+      const dash = document.getElementById('dashboard');
+      dash.style.display = 'block';
+
+      setTimeout(() => {
+        dash.style.opacity = '1';
+        dash.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    function toggleLetter() {
+      document.querySelector('.envelope-wrapper').classList.toggle('open');
+    }
+  </script>
+
+</body>
+</html>
